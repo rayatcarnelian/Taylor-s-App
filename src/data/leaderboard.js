@@ -25,9 +25,9 @@ export const leaderboardData = [
     },
     {
         rank: 4,
-        name: "Hazem (You)",
+        name: "Rayat (You)",
         points: 1240, // Dynamic in App, but hardcoded here for initial render logic if needed separate
-        avatar: "H",
+        avatar: "R",
         color: "from-taylor-red to-taylor-red-dark",
         trend: "up",
         isUser: true

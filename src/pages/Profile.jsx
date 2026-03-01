@@ -9,7 +9,7 @@ export default function Profile() {
                 </div>
 
                 <div className="flex-1 text-center md:text-left">
-                    <h2 className="text-xl font-bold text-white">Hazem</h2>
+                    <h2 className="text-xl font-bold text-white">Rayat</h2>
                     <p className="text-gray-400 mb-4">Year 2 • Bachelor of Information Technology</p>
 
                     <div className="flex flex-wrap gap-2 justify-center md:justify-start">

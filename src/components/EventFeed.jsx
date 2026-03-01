@@ -7,6 +7,9 @@ import {
     HeartIcon,
     UserGroupIcon
 } from '@heroicons/react/24/outline';
+import { tgcDefinitions } from '../data/students';
+import { getProximityLabel } from '../data/campus';
+import { currentUser } from '../data/students';
 
 const iconMap = {
     CodeBracketIcon: CodeBracketIcon,
@@ -16,7 +19,7 @@ const iconMap = {
     UserGroupIcon: UserGroupIcon,
 };
 
-export default function EventFeed({ mode, onCheckIn }) {
+export default function EventFeed({ mode, onCheckIn, onEventClick }) {
     const filteredEvents = events.filter((e) => e.category === mode);
     const isFocus = mode === 'focus';
 
@@ -52,6 +55,8 @@ export default function EventFeed({ mode, onCheckIn }) {
                 >
                     {filteredEvents.map((event, index) => {
                         const IconComponent = iconMap[event.icon];
+                        const proximity = event.zone ? getProximityLabel(currentUser.campusZone, event.zone) : null;
+
                         return (
                             <motion.div
                                 key={event.id}
@@ -59,6 +64,7 @@ export default function EventFeed({ mode, onCheckIn }) {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.4, delay: index * 0.08 }}
                                 whileTap={{ scale: 0.98 }}
+                                onClick={() => onEventClick?.(event)}
                                 className="group relative rounded-2xl glass overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/10"
                             >
                                 {/* Accent Left Border */}
@@ -68,15 +74,23 @@ export default function EventFeed({ mode, onCheckIn }) {
                                 />
 
                                 <div className="p-4 pl-5">
-                                    {/* Top Metadata Row: Match Score & Tag */}
+                                    {/* Top Metadata Row */}
                                     <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 flex-wrap">
                                             <span className="text-[10px] font-inter font-bold bg-gray-700/50 text-green-400 px-2 py-0.5 rounded border border-green-500/20">
                                                 {event.match_score} Match
                                             </span>
                                             {event.friends_attending > 0 && (
                                                 <span className="text-[10px] font-inter text-gray-400 flex items-center gap-1">
                                                     👥 {event.friends_attending} friends
+                                                </span>
+                                            )}
+                                            {proximity && proximity.minutes !== null && (
+                                                <span
+                                                    className="text-[10px] font-inter flex items-center gap-1 px-1.5 py-0.5 rounded"
+                                                    style={{ color: proximity.color, backgroundColor: proximity.color + '15' }}
+                                                >
+                                                    📍 {proximity.label}
                                                 </span>
                                             )}
                                         </div>
@@ -102,18 +116,40 @@ export default function EventFeed({ mode, onCheckIn }) {
                                         {event.description}
                                     </p>
 
-                                    {/* Bottom Meta Row - Updated with Check-in & Social Proof */}
-                                    <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-3">
+                                    {/* TGC Tags */}
+                                    {event.tgcTags?.length > 0 && (
+                                        <div className="flex flex-wrap gap-1 mb-3">
+                                            {event.tgcTags.slice(0, 3).map((tag) => {
+                                                const def = tgcDefinitions[tag];
+                                                return (
+                                                    <span
+                                                        key={tag}
+                                                        className="text-[9px] font-inter font-medium px-1.5 py-0.5 rounded"
+                                                        style={{
+                                                            backgroundColor: def?.color + '12',
+                                                            color: def?.color,
+                                                        }}
+                                                    >
+                                                        {def?.icon} {def?.label?.split(' ')[0]}
+                                                    </span>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
 
+                                    {/* Bottom Meta Row */}
+                                    <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-1">
                                         {/* Social Proof Bubbles */}
                                         <div className="flex items-center -space-x-2">
-                                            {[...Array(3)].map((_, i) => (
+                                            {(event.friendNames || []).slice(0, 3).map((name, i) => (
                                                 <div key={i} className={`w-5 h-5 rounded-full border border-[#1a1a26] flex items-center justify-center text-[8px] font-bold text-white ${['bg-blue-500', 'bg-purple-500', 'bg-yellow-500'][i]
                                                     }`}>
-                                                    {String.fromCharCode(65 + i)}
+                                                    {name[0]}
                                                 </div>
                                             ))}
-                                            <span className="text-[9px] text-gray-500 ml-3 font-medium">+4 friends</span>
+                                            {event.friends_attending > 0 && (
+                                                <span className="text-[9px] text-gray-500 ml-3 font-medium">+{event.friends_attending} going</span>
+                                            )}
                                         </div>
 
                                         <button
@@ -129,7 +165,7 @@ export default function EventFeed({ mode, onCheckIn }) {
                                     </div>
                                 </div>
 
-                                {/* Shimmer Effect on Hover */}
+                                {/* Shimmer */}
                                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 shimmer pointer-events-none" />
                             </motion.div>
                         );

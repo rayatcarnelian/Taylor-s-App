@@ -142,12 +142,12 @@ export default function SchedulePage() {
                                                         className="flex-shrink-0 px-3 py-2 rounded-lg bg-white/5 border border-white/5 min-w-[160px]"
                                                     >
                                                         <p className="text-[10px] font-inter font-bold text-green-400 mb-0.5">
-                                                            {evt.match_score} Match
+                                                            {evt.match_score || '—'} Match
                                                         </p>
                                                         <p className="text-[11px] font-outfit font-semibold text-white truncate">
                                                             {evt.title}
                                                         </p>
-                                                        <p className="text-[9px] font-inter text-gray-500">{evt.time}</p>
+                                                        <p className="text-[9px] font-inter text-gray-500">{evt.time || 'TBD'}</p>
                                                     </div>
                                                 ))}
                                             </div>

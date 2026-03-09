@@ -150,39 +150,45 @@ export default function AdminDashboard({ onBack }) {
         <div className="min-h-screen bg-[#050508] text-white">
             {/* Admin Header */}
             <div className="sticky top-0 z-50 bg-[#050508]/90 backdrop-blur-xl border-b border-white/5">
-                <div className="max-w-[900px] mx-auto px-5 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <button onClick={onBack} className="p-2 rounded-xl glass hover:bg-white/10 transition-colors">
-                            <X size={16} className="text-gray-400" />
-                        </button>
-                        <div>
-                            <h1 className="text-lg font-outfit font-bold text-white flex items-center gap-2">
-                                Admin Dashboard
-                                <span className="text-[9px] font-inter font-medium bg-taylor-red/20 text-taylor-red px-2 py-0.5 rounded-full border border-taylor-red/30">
-                                    {currentAdmin.role}
-                                </span>
-                            </h1>
-                            <p className="text-[10px] font-inter text-gray-500">Welcome, {currentAdmin.name}</p>
+                <div className="max-w-[900px] mx-auto px-5 pt-4 pb-2">
+                    {/* Top row: close button + title + avatar */}
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                            <button onClick={onBack} className="p-2 rounded-xl glass hover:bg-white/10 transition-colors">
+                                <X size={16} className="text-gray-400" />
+                            </button>
+                            <div>
+                                <h1 className="text-base font-outfit font-bold text-white">
+                                    Admin Dashboard
+                                </h1>
+                                <p className="text-[10px] font-inter text-gray-500">Welcome, {currentAdmin.name}</p>
+                            </div>
+                        </div>
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-taylor-red to-taylor-red-dark flex items-center justify-center text-sm font-bold shadow-glow-red">
+                            {currentAdmin.avatar}
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+
+                    {/* Admin Switcher Row */}
+                    <div className="flex items-center gap-2 ml-11">
+                        <span className="text-[9px] font-inter font-medium bg-taylor-red/20 text-taylor-red px-2 py-0.5 rounded-full border border-taylor-red/30 whitespace-nowrap">
+                            {currentAdmin.role}
+                        </span>
                         <select 
                             value={adminUserIndex}
                             onChange={(e) => {
                                 setAdminUserIndex(Number(e.target.value));
-                                setActiveSection('overview'); // reset to safe tab when switching
+                                setActiveSection('overview');
                             }}
-                            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[10px] font-inter text-gray-300 focus:outline-none focus:border-taylor-red cursor-pointer appearance-none"
+                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-[11px] font-inter text-gray-300 focus:outline-none focus:border-taylor-red/50 cursor-pointer"
+                            style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         >
                             {adminUsers.map((u, i) => (
                                 <option key={u.id} value={i} className="bg-[#12121a] text-white">
-                                    {u.name} ({u.role})
+                                    {u.name} — {u.role}
                                 </option>
                             ))}
                         </select>
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-taylor-red to-taylor-red-dark flex items-center justify-center text-xs font-bold">
-                            {currentAdmin.avatar}
-                        </div>
                     </div>
                 </div>
 

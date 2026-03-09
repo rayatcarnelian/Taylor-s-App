@@ -62,7 +62,7 @@ function StatCard({ icon: Icon, label, value, change, changeType, color }) {
 }
 
 // Event CRUD row
-function EventRow({ event, onEdit, onDelete }) {
+function EventRow({ event, onEdit, onDelete, canDelete }) {
     const capacityPercent = Math.round((event.registered / event.capacity) * 100);
     return (
         <div className="flex items-center justify-between p-3 rounded-xl glass mb-2">
@@ -85,15 +85,18 @@ function EventRow({ event, onEdit, onDelete }) {
                 <button onClick={() => onEdit(event)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
                     <Edit3 size={13} className="text-gray-400" />
                 </button>
-                <button onClick={() => onDelete(event.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 transition-colors">
-                    <Trash2 size={13} className="text-red-400" />
-                </button>
+                {canDelete && (
+                    <button onClick={() => onDelete(event.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 transition-colors">
+                        <Trash2 size={13} className="text-red-400" />
+                    </button>
+                )}
             </div>
         </div>
     );
 }
 
 export default function AdminDashboard({ onBack }) {
+    const [adminUserIndex, setAdminUserIndex] = useState(0);
     const [activeSection, setActiveSection] = useState('overview'); // overview | events | burnout | access
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
@@ -103,7 +106,7 @@ export default function AdminDashboard({ onBack }) {
         category: 'focus', capacity: 50, description: '', zone: 'Block D',
     });
 
-    const currentAdmin = adminUsers[0]; // Dr. Ahmad (Super Admin)
+    const currentAdmin = adminUsers[adminUserIndex]; // Dynamically selected admin
     const permissions = roles[currentAdmin.role];
     const analytics = adminAnalytics;
 
@@ -139,8 +142,8 @@ export default function AdminDashboard({ onBack }) {
     const sections = [
         { id: 'overview', icon: BarChart3, label: 'Overview' },
         { id: 'events', icon: Calendar, label: 'Events' },
-        { id: 'burnout', icon: Activity, label: 'Burnout' },
-        { id: 'access', icon: Shield, label: 'Access' },
+        ...(permissions.canViewBurnout ? [{ id: 'burnout', icon: Activity, label: 'Burnout' }] : []),
+        ...(permissions.canManageUsers ? [{ id: 'access', icon: Shield, label: 'Access' }] : []),
     ];
 
     return (
@@ -163,6 +166,20 @@ export default function AdminDashboard({ onBack }) {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <select 
+                            value={adminUserIndex}
+                            onChange={(e) => {
+                                setAdminUserIndex(Number(e.target.value));
+                                setActiveSection('overview'); // reset to safe tab when switching
+                            }}
+                            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-[10px] font-inter text-gray-300 focus:outline-none focus:border-taylor-red cursor-pointer appearance-none"
+                        >
+                            {adminUsers.map((u, i) => (
+                                <option key={u.id} value={i} className="bg-[#12121a] text-white">
+                                    {u.name} ({u.role})
+                                </option>
+                            ))}
+                        </select>
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-taylor-red to-taylor-red-dark flex items-center justify-center text-xs font-bold">
                             {currentAdmin.avatar}
                         </div>
@@ -322,6 +339,7 @@ export default function AdminDashboard({ onBack }) {
                                         event={event}
                                         onEdit={(evt) => setEditingEvent(evt)}
                                         onDelete={handleDelete}
+                                        canDelete={permissions.canDelete}
                                     />
                                 ))}
                             </div>

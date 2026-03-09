@@ -70,9 +70,9 @@ export const adminAnalytics = {
 
 // Mock admin users for RBAC
 export const adminUsers = [
-    { id: 'ADMIN-001', name: 'Dr. Ahmad Razif', role: 'Super Admin', faculty: 'Computing', avatar: 'A', lastLogin: '2026-03-02T01:30:00' },
-    { id: 'ADMIN-002', name: 'Ms. Sarah Tan', role: 'Event Manager', faculty: 'Student Affairs', avatar: 'S', lastLogin: '2026-03-01T18:45:00' },
-    { id: 'ADMIN-003', name: 'Mr. Danish Irfan', role: 'Analytics Viewer', faculty: 'Computing', avatar: 'D', lastLogin: '2026-03-01T14:20:00' },
+    { id: 'ADMIN-001', name: 'Mr. Danish Irfan', role: 'Super Admin', faculty: 'Computing', avatar: 'D', lastLogin: '2026-03-02T01:30:00' },
+    { id: 'ADMIN-002', name: 'Mr. Faisal', role: 'Event Manager', faculty: 'Student Affairs', avatar: 'F', lastLogin: '2026-03-01T18:45:00' },
+    { id: 'ADMIN-003', name: 'Ms. Felzha', role: 'Event Manager', faculty: 'Computing', avatar: 'F', lastLogin: '2026-03-01T14:20:00' },
 ];
 
 // RBAC role definitions

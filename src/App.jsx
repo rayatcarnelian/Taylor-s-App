@@ -217,18 +217,6 @@ const Profile = ({ points, onRedeem, onOpenAdmin }) => (
                 ))}
             </div>
         </div>
-        {/* Admin Access Button */}
-        <div className="mt-8 mb-4">
-            <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={onOpenAdmin}
-                className="w-full py-3.5 rounded-xl glass flex items-center justify-center gap-2 text-sm font-outfit font-semibold text-purple-400 hover:bg-purple-500/10 transition-colors border border-purple-500/10"
-            >
-                <Shield size={16} />
-                Open Admin Dashboard
-            </motion.button>
-            <p className="text-[9px] font-inter text-gray-600 text-center mt-1">For authorized administrators only</p>
-        </div>
     </div>
 );
 
@@ -306,6 +294,7 @@ export default function App() {
                                 <Header
                                     points={points}
                                     onNotificationClick={() => setShowNotifications(true)}
+                                    onOpenAdmin={() => setShowAdmin(true)}
                                 />
                             </div>
 

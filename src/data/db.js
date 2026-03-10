@@ -3,6 +3,13 @@ import { adminUsers as initialAdmins } from './admin';
 
 // Initialize the database if it doesn't exist
 export const initializeDB = () => {
+    const version = '1.2'; // Bump to ensure new passwords take effect
+    if (localStorage.getItem('taylors_db_version') !== version) {
+        localStorage.removeItem('taylors_students');
+        localStorage.removeItem('taylors_admins');
+        localStorage.setItem('taylors_db_version', version);
+    }
+
     if (!localStorage.getItem('taylors_students')) {
         localStorage.setItem('taylors_students', JSON.stringify(initialStudents));
     }

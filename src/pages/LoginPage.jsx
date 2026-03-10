@@ -240,51 +240,45 @@ const LoginPage = ({ onLogin }) => {
                     )}
                 </AnimatePresence>
 
-                {/* Quick Access Demo Buttons - Kept for convenience during prototype presentation */}
+                {/* Test Credentials Display */}
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
-                    className="w-full"
+                    className="w-full mt-2"
                 >
                     <div className="flex items-center gap-3 mb-4">
                         <div className="flex-1 h-px bg-white/10"></div>
-                        <span className="text-[10px] uppercase tracking-wider font-inter text-gray-500">Quick Demo Access</span>
+                        <span className="text-[10px] uppercase tracking-wider font-inter text-gray-500">Test Credentials</span>
                         <div className="flex-1 h-px bg-white/10"></div>
                     </div>
 
                     <div className="space-y-3">
-                        <button 
-                            onClick={() => handleMockLogin('admin')}
-                            className="w-full py-3 glass hover:bg-white/10 rounded-xl flex items-center justify-between px-4 transition-colors group"
-                        >
+                        <div className="w-full py-3 glass rounded-xl flex items-center justify-between px-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-yellow-500/20 text-yellow-500 flex items-center justify-center">
                                     <Shield size={16} />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-sm font-outfit font-bold text-white group-hover:text-yellow-500 transition-colors">Admin (Event Manager)</p>
-                                    <p className="text-[10px] font-inter text-gray-500">Faisal / Felzha</p>
+                                    <p className="text-sm font-outfit font-bold text-white">Event Manager</p>
+                                    <p className="text-[10px] font-inter text-gray-400 font-mono mt-0.5">faisal.admin@taylors.edu.my</p>
+                                    <p className="text-[10px] font-inter text-taylor-red font-mono mt-0.5">Pass: admin123</p>
                                 </div>
                             </div>
-                            <ArrowRight size={16} className="text-gray-600 group-hover:text-yellow-500 transition-colors" />
-                        </button>
+                        </div>
 
-                        <button 
-                            onClick={() => handleMockLogin('super_admin')}
-                            className="w-full py-3 glass hover:bg-white/10 rounded-xl flex items-center justify-between px-4 transition-colors group border border-taylor-red/20"
-                        >
+                        <div className="w-full py-3 glass rounded-xl flex items-center justify-between px-4 border border-taylor-red/20">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-taylor-red/20 text-taylor-red flex items-center justify-center">
                                     <Shield size={16} />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-sm font-outfit font-bold text-white group-hover:text-taylor-red transition-colors">Super Admin</p>
-                                    <p className="text-[10px] font-inter text-gray-500">Danish</p>
+                                    <p className="text-sm font-outfit font-bold text-white">Super Admin</p>
+                                    <p className="text-[10px] font-inter text-gray-400 font-mono mt-0.5">danish.admin@taylors.edu.my</p>
+                                    <p className="text-[10px] font-inter text-taylor-red font-mono mt-0.5">Pass: danish123</p>
                                 </div>
                             </div>
-                            <ArrowRight size={16} className="text-gray-600 group-hover:text-taylor-red transition-colors" />
-                        </button>
+                        </div>
                     </div>
                 </motion.div>
             </div>

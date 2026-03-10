@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { getUnreadCount } from '../data/notifications';
 import { Shield } from 'lucide-react';
 
-export default function Header({ points, onNotificationClick, onOpenAdmin }) {
+export default function Header({ points, onNotificationClick, onOpenAdmin, userRole }) {
     const unreadCount = getUnreadCount();
 
     return (
@@ -34,14 +34,16 @@ export default function Header({ points, onNotificationClick, onOpenAdmin }) {
 
             {/* Icons mapping */}
             <div className="flex items-center gap-2">
-                {/* Admin Access Button */}
-                <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={onOpenAdmin}
-                    className="relative p-2.5 rounded-xl glass hover:bg-white/5 transition-colors bg-purple-500/10 border border-purple-500/20"
-                >
-                    <Shield size={20} className="text-purple-400" />
-                </motion.button>
+                {/* Admin Access Button (Hidden for Students) */}
+                {userRole !== 'student' && (
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={onOpenAdmin}
+                        className="relative p-2.5 rounded-xl glass hover:bg-white/5 transition-colors bg-purple-500/10 border border-purple-500/20"
+                    >
+                        <Shield size={20} className="text-purple-400" />
+                    </motion.button>
+                )}
 
                 {/* Notification Bell */}
                 <motion.button

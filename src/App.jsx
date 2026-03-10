@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Calendar, Compass, User, Shield } from 'lucide-react';
 import Header from './components/Header';
@@ -18,6 +18,8 @@ import RewardCard from './components/RewardCard';
 import { leaderboardData } from './data/leaderboard';
 import LeaderboardRow from './components/LeaderboardRow';
 import LandingPage from './pages/LandingPage';
+import { initializeDB } from './data/db';
+import LoginPage from './pages/LoginPage';
 import { merchantDeals } from './data/campus';
 import { currentUser } from './data/students';
 
@@ -223,12 +225,17 @@ const Profile = ({ points, onRedeem, onOpenAdmin }) => (
 export default function App() {
     const [mode, setMode] = useState('focus'); // 'focus' | 'balance'
     const [activeTab, setActiveTab] = useState('home'); // 'home' | 'schedule' | 'explore' | 'profile' | 'privacy'
-    const [showLanding, setShowLanding] = useState(true);
+    const [currentScreen, setCurrentScreen] = useState('landing'); // 'landing' | 'login' | 'app'
+    const [userRole, setUserRole] = useState('student'); // 'student' | 'admin' | 'super_admin'
     const [points, setPoints] = useState(1240);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventDetail, setShowEventDetail] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [showAdmin, setShowAdmin] = useState(false);
+
+    useEffect(() => {
+        initializeDB();
+    }, []);
 
     const toggleMode = () => setMode((prev) => (prev === 'focus' ? 'balance' : 'focus'));
 
@@ -269,22 +276,40 @@ export default function App() {
             {/* Mobile Container */}
             <div className="w-full max-w-[430px] h-screen bg-[#050508] relative flex flex-col shadow-2xl overflow-hidden border-x border-white/5">
                 <AnimatePresence mode="wait">
-                    {showLanding ? (
+                    {currentScreen === 'landing' && (
                         <motion.div
                             key="landing"
                             className="h-full"
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <LandingPage onGetStarted={() => setShowLanding(false)} />
+                            <LandingPage onGetStarted={() => setCurrentScreen('login')} />
                         </motion.div>
-                    ) : (
+                    )}
+                    
+                    {currentScreen === 'login' && (
+                        <motion.div
+                            key="login"
+                            className="absolute inset-0 z-50 bg-[#050508]"
+                            initial={{ opacity: 0, x: '100%' }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: '-100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        >
+                            <LoginPage onLogin={(role) => {
+                                setUserRole(role);
+                                setCurrentScreen('app');
+                            }} />
+                        </motion.div>
+                    )}
+
+                    {currentScreen === 'app' && (
                         <motion.div
                             key="app"
-                            className="flex flex-col h-full"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5 }}
+                            className="flex flex-col h-full absolute inset-0 bg-[#050508]"
+                            initial={{ opacity: 0, x: '100%' }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         >
                             {/* Decorative Top Bar */}
                             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-taylor-red via-taylor-red-light to-taylor-red z-50 pointer-events-none" />
@@ -295,6 +320,7 @@ export default function App() {
                                     points={points}
                                     onNotificationClick={() => setShowNotifications(true)}
                                     onOpenAdmin={() => setShowAdmin(true)}
+                                    userRole={userRole}
                                 />
                             </div>
 
@@ -391,7 +417,7 @@ export default function App() {
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
                         className="fixed inset-0 z-[200] bg-[#050508] overflow-y-auto"
                     >
-                        <AdminDashboard onBack={() => setShowAdmin(false)} />
+                        <AdminDashboard onBack={() => setShowAdmin(false)} userRole={userRole} />
                     </motion.div>
                 )}
             </AnimatePresence>

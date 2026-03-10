@@ -5,8 +5,9 @@ import {
     Edit3, Trash2, Eye, Shield, Activity, ChevronRight, X,
     ArrowUpRight, ArrowDownRight, Clock, Star, Zap
 } from 'lucide-react';
-import { adminAnalytics, adminUsers, roles } from '../data/admin';
+import { adminAnalytics, roles } from '../data/admin';
 import { events } from '../data/events';
+import { getAdmins, createAdmin } from '../data/db';
 
 // Simple bar chart component
 function MiniBarChart({ data, dataKeyA, dataKeyB, labelKey, height = 120 }) {
@@ -95,10 +96,20 @@ function EventRow({ event, onEdit, onDelete, canDelete }) {
     );
 }
 
-export default function AdminDashboard({ onBack }) {
-    const [adminUserIndex, setAdminUserIndex] = useState(0);
+export default function AdminDashboard({ onBack, userRole }) {
+    // If they logged in as super_admin, default to Danish (index 0). Otherwise Faisal (index 1).
+    const initialIndex = userRole === 'super_admin' ? 0 : 1;
+    const [adminUserIndex, setAdminUserIndex] = useState(initialIndex);
     const [activeSection, setActiveSection] = useState('overview'); // overview | events | burnout | access
     const [showCreateModal, setShowCreateModal] = useState(false);
+    
+    // User Management State
+    const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+    const [localAdminUsers, setLocalAdminUsers] = useState(getAdmins());
+    const [newUser, setNewUser] = useState({
+        name: '', email: '', password: '', role: 'Event Manager', faculty: 'Computing'
+    });
+
     const [editingEvent, setEditingEvent] = useState(null);
     const [adminEvents, setAdminEvents] = useState(events);
     const [newEvent, setNewEvent] = useState({
@@ -106,8 +117,8 @@ export default function AdminDashboard({ onBack }) {
         category: 'focus', capacity: 50, description: '', zone: 'Block D',
     });
 
-    const currentAdmin = adminUsers[adminUserIndex]; // Dynamically selected admin
-    const permissions = roles[currentAdmin.role];
+    const currentAdmin = localAdminUsers[adminUserIndex]; // Dynamically selected admin
+    const permissions = roles[currentAdmin?.role || 'Event Manager'];
     const analytics = adminAnalytics;
 
     const handleDelete = (id) => {
@@ -137,6 +148,28 @@ export default function AdminDashboard({ onBack }) {
         setAdminEvents(prev => [evt, ...prev]);
         setShowCreateModal(false);
         setNewEvent({ title: '', host: '', date: '', time: '', location: '', category: 'focus', capacity: 50, description: '', zone: 'Block D' });
+    };
+
+    const handleCreateUser = () => {
+        try {
+            const currentAdminRole = currentAdmin?.role || 'Event Manager';
+            const adminObj = createAdmin({
+                name: newUser.name,
+                email: newUser.email,
+                password: newUser.password,
+                role: newUser.role,
+                faculty: newUser.faculty
+            }, currentAdminRole);
+
+            // Refetch admins
+            setLocalAdminUsers(getAdmins());
+
+            alert(`Account successfully created for ${newUser.name}!`);
+            setShowCreateUserModal(false);
+            setNewUser({ name: '', email: '', password: '', role: 'Event Manager', faculty: 'Computing' });
+        } catch (err) {
+            alert(err.message);
+        }
     };
 
     const sections = [
@@ -183,7 +216,7 @@ export default function AdminDashboard({ onBack }) {
                             className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-[11px] font-inter text-gray-300 focus:outline-none focus:border-taylor-red/50 cursor-pointer"
                             style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         >
-                            {adminUsers.map((u, i) => (
+                            {localAdminUsers.map((u, i) => (
                                 <option key={u.id} value={i} className="bg-[#12121a] text-white">
                                     {u.name} — {u.role}
                                 </option>
@@ -462,9 +495,19 @@ export default function AdminDashboard({ onBack }) {
 
                             {/* Admin Users */}
                             <div className="mb-6">
-                                <h3 className="text-sm font-outfit font-semibold text-gray-300 mb-3">Admin Users</h3>
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-outfit font-semibold text-gray-300">Admin Users</h3>
+                                    {currentAdmin?.role === 'Super Admin' && (
+                                        <button 
+                                            onClick={() => setShowCreateUserModal(true)}
+                                            className="text-[10px] font-inter font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                                        >
+                                            <span className="text-taylor-red">+</span> Add Account
+                                        </button>
+                                    )}
+                                </div>
                                 <div className="space-y-2">
-                                    {adminUsers.map((admin) => (
+                                    {localAdminUsers.map((admin) => (
                                         <div key={admin.id} className="glass rounded-xl p-4 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-taylor-red to-taylor-red-dark flex items-center justify-center text-sm font-bold text-white">
@@ -598,11 +641,10 @@ export default function AdminDashboard({ onBack }) {
                                         <div>
                                             <label className="text-[10px] font-inter font-medium text-gray-400 uppercase tracking-wider mb-1 block">Time</label>
                                             <input
-                                                type="text"
+                                                type="time"
                                                 value={newEvent.time}
                                                 onChange={(e) => setNewEvent(prev => ({ ...prev, time: e.target.value }))}
-                                                placeholder="2:00 - 4:00 PM"
-                                                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 text-sm"
+                                                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
                                             />
                                         </div>
                                     </div>
@@ -668,6 +710,106 @@ export default function AdminDashboard({ onBack }) {
                                         <p className="text-[9px] font-inter text-gray-600 text-center mt-2">* Required fields</p>
                                     </div>
                                 </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* Create User Modal */}
+            <AnimatePresence>
+                {showCreateUserModal && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowCreateUserModal(false)}
+                            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300]"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, y: '100%' }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: '100%' }}
+                            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                            className="fixed bottom-0 left-0 right-0 bg-[#12121a] rounded-t-3xl z-[301] border-t border-white/10"
+                            style={{ maxHeight: '85vh' }}
+                        >
+                            <div className="flex justify-center pt-3 pb-1">
+                                <div className="w-10 h-1 rounded-full bg-white/20" />
+                            </div>
+
+                            <div className="flex items-center justify-between px-6 pb-3">
+                                <h3 className="text-lg font-outfit font-bold text-white">Create Admin Account</h3>
+                                <button onClick={() => setShowCreateUserModal(false)} className="p-1.5 rounded-lg glass">
+                                    <X size={16} className="text-gray-400" />
+                                </button>
+                            </div>
+
+                            <div className="overflow-y-auto px-6 pb-8" style={{ maxHeight: 'calc(85vh - 80px)' }}>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="text-[10px] font-inter font-medium text-gray-400 uppercase tracking-wider mb-1 block">Full Name *</label>
+                                        <input
+                                            type="text"
+                                            value={newUser.name}
+                                            onChange={(e) => setNewUser(prev => ({ ...prev, name: e.target.value }))}
+                                            placeholder="e.g. Ms. Sarah"
+                                            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-taylor-red"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-inter font-medium text-gray-400 uppercase tracking-wider mb-1 block">Campus Email *</label>
+                                        <input
+                                            type="email"
+                                            value={newUser.email}
+                                            onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
+                                            placeholder="e.g. sarah.admin@taylors.edu.my"
+                                            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-taylor-red"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-inter font-medium text-gray-400 uppercase tracking-wider mb-1 block">Temporary Password *</label>
+                                        <input
+                                            type="text"
+                                            value={newUser.password}
+                                            onChange={(e) => setNewUser(prev => ({ ...prev, password: e.target.value }))}
+                                            placeholder="e.g. tempPass123"
+                                            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-taylor-red"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-[10px] font-inter font-medium text-gray-400 uppercase tracking-wider mb-1 block">Role</label>
+                                            <select
+                                                value={newUser.role}
+                                                onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value }))}
+                                                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-taylor-red"
+                                            >
+                                                <option value="Event Manager">Event Manager</option>
+                                                <option value="Analytics Viewer">Analytics Viewer</option>
+                                                <option value="Super Admin">Super Admin</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-inter font-medium text-gray-400 uppercase tracking-wider mb-1 block">Faculty/Dept</label>
+                                            <input
+                                                type="text"
+                                                value={newUser.faculty}
+                                                onChange={(e) => setNewUser(prev => ({ ...prev, faculty: e.target.value }))}
+                                                placeholder="e.g. Computing"
+                                                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-taylor-red"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleCreateUser}
+                                    className="w-full mt-6 bg-taylor-red hover:bg-taylor-red-light text-white font-bold py-3.5 rounded-xl transition-colors shadow-glow-red"
+                                >
+                                    Create Account
+                                </button>
                             </div>
                         </motion.div>
                     </>

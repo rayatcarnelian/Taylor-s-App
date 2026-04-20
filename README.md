@@ -63,6 +63,6 @@ src/
 └── main.jsx       # Application entry point
 ```
 
-## License
+## License 
  
 MIT 

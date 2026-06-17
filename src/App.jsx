@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Calendar, Compass, User, Shield } from 'lucide-react';
+import { Home, Calendar, Compass, User } from 'lucide-react';
 import Header from './components/Header';
 import Timetable from './components/Timetable';
 import ModeToggle from './components/ModeToggle';
@@ -9,7 +9,6 @@ import EventDetailModal from './components/EventDetailModal';
 import NotificationCenter from './components/NotificationCenter';
 import ShineRadarChart from './components/ShineRadarChart';
 import SchedulePage from './components/SchedulePage';
-import PrivacyDashboard from './components/PrivacyDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import { clubs } from './data/clubs';
 import ClubCard from './components/ClubCard';
@@ -20,8 +19,10 @@ import LeaderboardRow from './components/LeaderboardRow';
 import LandingPage from './pages/LandingPage';
 import { initializeDB } from './data/db';
 import LoginPage from './pages/LoginPage';
+import Profile from './pages/Profile';
 import { merchantDeals } from './data/campus';
 import { currentUser } from './data/students';
+import Chatbot from './components/Chatbot';
 
 // Explore Page - Clubs & Merchant Deals
 const Explore = () => {
@@ -140,93 +141,11 @@ const Explore = () => {
     );
 };
 
-// Profile Page - Enhanced with SHINE/TGC
-const Profile = ({ points, onRedeem, onOpenAdmin }) => (
-    <div className="p-6 pb-24">
-        <h1 className="text-2xl font-bold text-white mb-6">Student Profile</h1>
-
-        {/* Stats Card */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#E31837] to-[#8a1525] flex items-center justify-center text-4xl font-serif font-bold text-white shadow-glow-red border border-white/10">
-                T
-            </div>
-            <div>
-                <h2 className="text-lg font-bold text-white">{currentUser.name}</h2>
-                <p className="text-sm text-gray-400">Year {currentUser.year} • {currentUser.faculty.split('&')[0]}</p>
-                <div className="mt-1 flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20">
-                        <span className="text-[10px] font-bold text-yellow-500">💎 {points} Points</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20">
-                        <span className="text-[10px] font-bold text-orange-400">🔥 {currentUser.streak} Day Streak</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-1">
-                <span className="text-gray-400 text-[10px] uppercase tracking-wider">Events</span>
-                <span className="text-white font-bold text-xl">{currentUser.eventsAttended}</span>
-            </div>
-            <div className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-1">
-                <span className="text-gray-400 text-[10px] uppercase tracking-wider">Focus Score</span>
-                <span className="text-taylor-red font-bold text-xl">{currentUser.focusScore}%</span>
-            </div>
-            <div className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-1">
-                <span className="text-gray-400 text-[10px] uppercase tracking-wider">Balance Score</span>
-                <span className="text-balance-accent font-bold text-xl">{currentUser.balanceScore}%</span>
-            </div>
-            <div className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-1">
-                <span className="text-gray-400 text-[10px] uppercase tracking-wider">Clubs</span>
-                <span className="text-purple-400 font-bold text-xl">{currentUser.joinedClubs.length}</span>
-            </div>
-        </div>
-
-        {/* SHINE / TGC Charts */}
-        <ShineRadarChart />
-
-        {/* Rewards Shop */}
-        <div className="mb-8 mt-6">
-            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                Rewards Shop <span className="text-xs font-normal text-gray-500 bg-white/5 px-2 py-0.5 rounded-full">Spend your points</span>
-            </h2>
-            <div className="grid grid-cols-2 gap-3">
-                {rewards.map(reward => (
-                    <RewardCard
-                        key={reward.id}
-                        reward={reward}
-                        userPoints={points}
-                        onRedeem={onRedeem}
-                    />
-                ))}
-            </div>
-        </div>
-
-        {/* Leaderboard */}
-        <div>
-            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                Campus Leaderboard <span className="text-xs font-normal text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded-full">Top 5</span>
-            </h2>
-            <div className="space-y-3">
-                {leaderboardData.map((student, index) => (
-                    <LeaderboardRow
-                        key={index}
-                        index={index}
-                        student={student.isUser ? { ...student, points: points } : student}
-                    />
-                ))}
-            </div>
-        </div>
-    </div>
-);
-
 export default function App() {
-    const [mode, setMode] = useState('focus'); // 'focus' | 'balance'
-    const [activeTab, setActiveTab] = useState('home'); // 'home' | 'schedule' | 'explore' | 'profile' | 'privacy'
+    const [activeTab, setActiveTab] = useState('home'); // 'home' | 'schedule' | 'explore' | 'profile'
     const [currentScreen, setCurrentScreen] = useState('landing'); // 'landing' | 'login' | 'app'
     const [userRole, setUserRole] = useState('student'); // 'student' | 'admin' | 'super_admin'
+    const [mode, setMode] = useState('focus'); // 'focus' | 'balance'
     const [points, setPoints] = useState(1240);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventDetail, setShowEventDetail] = useState(false);
@@ -237,11 +156,16 @@ export default function App() {
         initializeDB();
     }, []);
 
-    const toggleMode = () => setMode((prev) => (prev === 'focus' ? 'balance' : 'focus'));
+    const toggleMode = () => {
+        setMode(prev => prev === 'focus' ? 'balance' : 'focus');
+    };
+
+    // Mode toggle removed from global scope; it's now scoped to Profile page only.
 
     const handleCheckIn = () => {
+        window.open('https://docs.google.com/forms', '_blank');
         setPoints(prev => prev + 50);
-        alert("🎉 Checked in! +50 Nexus Points earned!");
+        alert("🎉 Check-in page opened. Complete the form to finish your attendance.");
     };
 
     const handleRedeem = (cost) => {
@@ -268,7 +192,6 @@ export default function App() {
         { id: 'schedule', icon: Calendar, label: 'Schedule' },
         { id: 'explore', icon: Compass, label: 'Explore' },
         { id: 'profile', icon: User, label: 'Profile' },
-        { id: 'privacy', icon: Shield, label: 'My Data' },
     ];
 
     return (
@@ -299,6 +222,7 @@ export default function App() {
                             <LoginPage onLogin={(role) => {
                                 setUserRole(role);
                                 setCurrentScreen('app');
+                                setActiveTab('home');
                             }} />
                         </motion.div>
                     )}
@@ -334,7 +258,23 @@ export default function App() {
                                             animate={{ opacity: 1, x: 0 }}
                                             exit={{ opacity: 0, x: 20 }}
                                             transition={{ duration: 0.2 }}
+                                            className={`transition-all duration-500 ${
+                                                mode === 'focus'
+                                                    ? 'bg-[#071b2f]'
+                                                    : 'bg-gradient-to-br from-[#0f2a27] via-[#050508] to-[#0d1f1a]'
+                                            }`}
                                         >
+                                            <div className="px-5 pt-6 pb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                                <div>
+                                                    <p className="text-sm uppercase tracking-[0.22em] text-slate-400">Current mode</p>
+                                                    <h2 className="text-2xl font-bold text-white">{mode === 'focus' ? 'Focus Mode' : 'Balance Mode'}</h2>
+                                                </div>
+                                                <div className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] font-semibold ${mode === 'focus' ? 'bg-blue-500/15 text-blue-200 border border-blue-400/20' : 'bg-teal-400/10 text-teal-300 border border-teal-300/20'}`}>
+                                                    <span className={`w-2 h-2 rounded-full ${mode === 'focus' ? 'bg-blue-400' : 'bg-teal-300'}`} />
+                                                    {mode === 'focus' ? 'Deep focus' : 'Chill balance'}
+                                                </div>
+                                            </div>
+
                                             <Timetable />
                                             <ModeToggle mode={mode} onToggle={toggleMode} />
                                             <EventFeed mode={mode} onCheckIn={handleCheckIn} onEventClick={handleEventClick} />
@@ -352,14 +292,10 @@ export default function App() {
                                     )}
                                     {activeTab === 'profile' && (
                                         <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                            <Profile points={points} onRedeem={handleRedeem} onOpenAdmin={() => setShowAdmin(true)} />
+                                            <Profile points={points} onRedeem={handleRedeem} onOpenAdmin={() => setShowAdmin(true)} mode={mode} />
                                         </motion.div>
                                     )}
-                                    {activeTab === 'privacy' && (
-                                        <motion.div key="privacy" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                            <PrivacyDashboard />
-                                        </motion.div>
-                                    )}
+                                    {/* 'privacy' tab removed — PrivacyDashboard merged into Profile page */}
                                 </AnimatePresence>
                             </main>
 
@@ -421,6 +357,9 @@ export default function App() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            
+            {/* AI Chatbot */}
+            <Chatbot />
         </div>
     );
 }

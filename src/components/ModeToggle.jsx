@@ -28,10 +28,10 @@ export default function ModeToggle({ mode, onToggle }) {
                     animate={{
                         x: isFocus ? 6 : 'calc(100% + 6px)',
                         background: isFocus
-                            ? 'linear-gradient(135deg, #C8102E, #FF3B5C)'
+                            ? 'linear-gradient(135deg, #0f2a5c, #3b6fff)'
                             : 'linear-gradient(135deg, #2ED8A3, #4EEAAF)',
                         boxShadow: isFocus
-                            ? '0 4px 20px rgba(200, 16, 46, 0.4)'
+                            ? '0 4px 20px rgba(59, 111, 255, 0.35)'
                             : '0 4px 20px rgba(78, 234, 175, 0.4)',
                     }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}

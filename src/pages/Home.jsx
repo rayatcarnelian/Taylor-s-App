@@ -1,14 +1,7 @@
-import { useState } from 'react';
 import Timetable from '../components/Timetable';
 import EventFeed from '../components/EventFeed';
-import ModeToggle from '../components/ModeToggle';
 
 export default function Home() {
-    const [mode, setMode] = useState('focus');
-
-    const toggleMode = () => {
-        setMode((prev) => (prev === 'focus' ? 'balance' : 'focus'));
-    };
 
     return (
         <div className="max-w-4xl mx-auto md:p-8">
@@ -26,17 +19,11 @@ export default function Home() {
             <div className="md:grid md:grid-cols-[1fr_350px] md:gap-8 items-start">
                 <div className="space-y-6">
                     <Timetable />
-                    <div className="md:hidden">
-                        <ModeToggle mode={mode} onToggle={toggleMode} />
-                    </div>
-                    <div className="hidden md:block">
-                        {/* Desktop Toggle (Optional: Can keep it in sidebar or here) */}
-                        <ModeToggle mode={mode} onToggle={toggleMode} />
-                    </div>
+                    {/* Mode toggle scoped to Profile page only — removed from Home */}
                 </div>
 
                 <div className="mt-6 md:mt-0">
-                    <EventFeed mode={mode} />
+                    <EventFeed />
                 </div>
             </div>
         </div>

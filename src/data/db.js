@@ -90,15 +90,18 @@ export const createAdmin = (adminData, creatorRole) => {
 
 // Auth operations
 export const login = (email, password) => {
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedPassword = password.trim();
+    
     const admins = getAdmins();
-    const adminMatch = admins.find(a => a.email === email && a.password === password);
+    const adminMatch = admins.find(a => a.email.toLowerCase() === trimmedEmail && a.password === trimmedPassword);
     
     if (adminMatch) {
         return { user: adminMatch, type: adminMatch.role === 'Super Admin' ? 'super_admin' : 'admin' };
     }
 
     const students = getStudents();
-    const studentMatch = students.find(s => s.email === email && s.password === password);
+    const studentMatch = students.find(s => s.email.toLowerCase() === trimmedEmail && s.password === trimmedPassword);
     
     if (studentMatch) {
         return { user: studentMatch, type: 'student' };

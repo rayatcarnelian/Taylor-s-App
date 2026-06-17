@@ -207,6 +207,13 @@ export default function App() {
         setShowEventDetail(true);
     };
 
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        setCurrentScreen('landing');
+        setUserRole('student');
+        setActiveTab('home');
+    };
+
     const handleRSVP = (eventId) => {
         // In a real app, this would call the API
         console.log('RSVP toggled for:', eventId);
@@ -317,7 +324,7 @@ export default function App() {
                                     )}
                                     {activeTab === 'profile' && (
                                         <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                            <Profile points={points} onRedeem={handleRedeem} onOpenAdmin={() => setShowAdmin(true)} mode={mode} />
+                                            <Profile points={points} onRedeem={handleRedeem} onOpenAdmin={() => setShowAdmin(true)} mode={mode} onLogout={handleLogout} />
                                         </motion.div>
                                     )}
                                     {/* 'privacy' tab removed — PrivacyDashboard merged into Profile page */}

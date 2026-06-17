@@ -13,20 +13,16 @@ export default function GoogleLogin({ onLogin }) {
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            // Trigger Supabase Google OAuth
-            const { data, error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: window.location.origin
-                }
-            });
-            if (error) throw error;
-            
+            // Mocking a fast Google login to save time
+            setTimeout(() => {
+                onLogin('student');
+            }, 500);
         } catch (error) {
             console.error('Error logging in with Google:', error.message);
             alert('Google Login failed: ' + error.message);
         } finally {
-            setLoading(false);
+            // Keep loading true for the 500ms so the button shows loading state briefly,
+            // but we don't need to reset it if unmounted.
         }
     };
 

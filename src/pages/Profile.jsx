@@ -1,20 +1,30 @@
 import { useRef } from 'react';
+import { LogOut } from 'lucide-react';
 import PrivacyDashboard from '../components/PrivacyDashboard';
 import FocusMeterWidget from '../components/FocusMeterWidget';
 
-export default function Profile({ points, onRedeem, onOpenAdmin, mode }) {
+export default function Profile({ points, onRedeem, onOpenAdmin, mode, onLogout }) {
     const dataRef = useRef(null);
 
     return (
         <div className="p-6 pb-24">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold text-white">Student Profile</h1>
-                <button
-                    onClick={() => dataRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                    className="px-4 py-2 bg-taylor-red hover:bg-taylor-red-light text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                    My Data
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => dataRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                        className="px-4 py-2 bg-taylor-red hover:bg-taylor-red-light text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                        My Data
+                    </button>
+                    <button
+                        onClick={onLogout}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-sm font-medium rounded-lg transition-all duration-200 border border-red-500/20"
+                    >
+                        <LogOut size={16} />
+                        <span>Logout</span>
+                    </button>
+                </div>
             </div>
 
             {/* Profile Card */}

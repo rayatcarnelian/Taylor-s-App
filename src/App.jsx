@@ -23,6 +23,7 @@ import Profile from './pages/Profile';
 import { merchantDeals } from './data/campus';
 import { currentUser } from './data/students';
 import Chatbot from './components/Chatbot';
+import { supabase } from './components/GoogleLogin';
 
 // Explore Page - Clubs & Merchant Deals
 const Explore = () => {
@@ -154,6 +155,30 @@ export default function App() {
 
     useEffect(() => {
         initializeDB();
+
+        // Check active session on load
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                setUserRole('student');
+                setCurrentScreen('app');
+                setActiveTab('home');
+            }
+        });
+
+        // Listen for auth changes (e.g., returning from Google login)
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session) {
+                setUserRole('student');
+                setCurrentScreen('app');
+                setActiveTab('home');
+            } else {
+                setCurrentScreen('landing');
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     const toggleMode = () => {
